@@ -1,0 +1,9 @@
+#include <stdio.h>
+#include <stdlib.h>
+int
+main (void)
+{
+  system("python autenticarProxy.py");	
+  printf ("Até mais!\n");
+  return 0;
+}
