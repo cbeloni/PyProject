@@ -1,0 +1,8 @@
+Section: misc
+Priority: optional
+Package: MontaPycote
+Version: 1.0
+Maintainer: Cauê Beloni <cbeloni@gmail.com>
+Pre-Depends: python
+Architecture: all
+Description: Monta pacote para aplicação em banco de dados Oracle.

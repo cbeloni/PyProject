@@ -1,0 +1,8 @@
+Section: misc
+Priority: optional
+Package: PAuthentication
+Version: 2.1
+Maintainer: Cauê Beloni <cbeloni@gmail.com>
+Pre-Depends: python
+Architecture: all
+Description: GUI to add username and password of a proxy server..

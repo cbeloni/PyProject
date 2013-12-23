@@ -1,0 +1,6 @@
+#!/bin/bash
+clear
+echo “Este programa deve ser iniciado como ”
+python autenticarProxy.py
+echo “Até mais!”
+sleep 2

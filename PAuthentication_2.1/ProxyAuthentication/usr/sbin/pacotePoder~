@@ -1,0 +1,6 @@
+#!/bin/bash
+clear
+echo “Este programa deve ser iniciado como ”
+
+echo “Até mais!”
+sleep 2

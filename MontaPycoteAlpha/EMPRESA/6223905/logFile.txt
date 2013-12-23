@@ -1,0 +1,5 @@
+/home/beloni/Documentos/PyProjetos/MontaPycote/main.py
+/home/beloni/Documentos/PyProjetos/MontaPycote/EMPRESA/6223905/01_P_CTM_ALT_PERM_6223905_221113_1000.SQL
+/home/beloni/Documentos/PyProjetos/MontaPycote/EMPRESA/6223905/02_P_CTM_RELAT_ALT_6223905_221113_1000.SQL
+/home/beloni/Documentos/PyProjetos/MontaPycote/EMPRESA/6223905/02_PWF_MENU_INSERT_6223905_221113_1000.sql
+/home/beloni/Documentos/PyProjetos/MontaPycote/EMPRESA/6223905/03_P_CTM_ALTERARLOTE_6223905_221113_1000.SQL
