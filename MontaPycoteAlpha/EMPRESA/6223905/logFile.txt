@@ -1,3 +1,0 @@
-/opt/MontaPycote/main.py
-/home/beloni/Documentos/PyProjetos/MontaPycoteAlpha/EMPRESA/6223905/02_PWF_MENU_INSERT_6223905_221113_1000.sql
-/home/beloni/Documentos/PyProjetos/MontaPycoteAlpha/EMPRESA/6223905/03_P_CTM_ALTERARLOTE_6223905_221113_1000.SQL
