@@ -37,10 +37,9 @@ alter session set nls_date_format = 'dd/mm/yyyy';
 SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') INICIO_APLICACAO FROM DUAL; 
 @''' + param.Diretorio + '''\\''' + param.NomeScript + '''
 SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') FIM_APLICACAO FROM DUAL; ''' 
-#<<não funcionou
-
 	sLogMensagem = '''PROMPT --**************************** [ LOG DE MENSAGENS ] ******************************--;
 SELECT * FROM LF_TAB_LOG_PACOTE WHERE CHAMADO =TRIM(' ''' + param.NumeroChamado +''' '); '''
+#<<não funcionou
 
 	sCompila = '''PROMPT --**************************** [ APLICANDO 'COMPILA2.SQL' ] ******************************--;
 @''' + param.Diretorio + '''\compila2.sql '''
