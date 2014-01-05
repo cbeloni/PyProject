@@ -7,10 +7,10 @@ import os
 import pdb
 from comandosSql import *
 
-# Verifica diret√≥rio
+# Verifica diretÛrio
 vDirAlpha = "~/Documentos/PyProjects/MontaPycoteAlpha/"
 vDirProd  = "/opt/MontaPycote"
-vVersao = "1" # 0 = Produ√ß√£o, 1 = alpha
+vVersao = "1" # 0 = ProduÁ„o, 1 = alpha
 sChamadoVers = ""
 
 #altera de acordo com vVersao
@@ -19,8 +19,8 @@ if vVersao == "0":
 else:
 	vDir = vDirAlpha	
 
-#abre arquivo de log se par√¢metro inicial n√£o apenas o diret√≥rio atual. 
-#Isto √©. Caso haja arquivos a serem tratrados
+#abre arquivo de log se par‚metro inicial n„o apenas o diretÛrio atual. 
+#Isto È. Caso haja arquivos a serem tratrados
 param1 ='''['/home/beloni/Documentos/PyProjects/MontaPycoteAlpha/main.py']'''
 if (param1 != str(sys.argv)):	
 	text_file = open("logFile.txt", "w")
@@ -30,7 +30,7 @@ if (param1 != str(sys.argv)):
 
 #pdb.set_trace()
 
-#inicia vari√°vel para concaten√°-la sem erro
+#inicia vari·vel para concaten·-la sem erro
 DATA = ''
 
 #cria log com o nome dos arquivos
@@ -64,7 +64,7 @@ while valida:
 	    pacVersao += 1
 
 
-#instancia classe para par√¢metros dos comandos do script sql
+#instancia classe para par‚metros dos comandos do script sql
 parPacote = ParamPacotes()
 parPacote.set_numero_chamado(sChamado)
 
