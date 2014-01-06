@@ -7,10 +7,10 @@ import os
 import pdb
 from comandosSql import *
 
-# Verifica diret√≥rio
+# Verifica diretÛrio
 vDirAlpha = "~/Documentos/PyProjects/MontaPycoteAlpha/"
 vDirProd  = "/opt/MontaPycote"
-vVersao = "1" # 0 = Produ√ß√£o, 1 = alpha
+vVersao = "1" # 0 = ProduÁ„o, 1 = alpha
 sChamadoVers = ""
 
 #altera de acordo com vVersao
@@ -19,8 +19,8 @@ if vVersao == "0":
 else:
 	vDir = vDirAlpha	
 
-#abre arquivo de log se par√¢metro inicial n√£o apenas o diret√≥rio atual. 
-#Isto √©. Caso haja arquivos a serem tratrados
+#abre arquivo de log se par‚metro inicial n„o apenas o diretÛrio atual. 
+#Isto È. Caso haja arquivos a serem tratrados
 param1 ='''['/home/beloni/Documentos/PyProjects/MontaPycoteAlpha/main.py']'''
 if (param1 != str(sys.argv)):	
 	text_file = open("logFile.txt", "w")
@@ -30,7 +30,7 @@ if (param1 != str(sys.argv)):
 
 #pdb.set_trace()
 
-#inicia vari√°vel para concaten√°-la sem erro
+#inicia vari·vel para concaten·-la sem erro
 DATA = ''
 
 #cria log com o nome dos arquivos
@@ -64,10 +64,6 @@ while valida:
 	    pacVersao += 1
 
 
-#instancia classe para par√¢metros dos comandos do script sql
-parPacote = ParamPacotes()
-parPacote.set_numero_chamado(sChamado)
-
 sChamado = sChamadoVers
 
 #Copia arquivos default para pasta do chamado
@@ -80,7 +76,8 @@ os.system('cp '+ vDir +'/LF_TAB_LOG_PACOTE_CREATE.SQL Chamado_' + sChamado+'')
 
 #instancia classe com os comandos do script sql
 corpo = CorpoPacote()
-corpo.sInicio
+corpo.set_numero_chamado(sChamado)
+corpo.texto()
 
 text_file = open("Chamado_"+sChamado+"/Chamado_"+sChamado+".sql", "w")
 text_file.write("spool c:\sati\log_Chamado_" + sChamado +".txt \n")
@@ -90,23 +87,15 @@ text_file.write(corpo.sTabLog + "\n")
 
 for l in lArquivos:
 	if (l != ''):
-		parPacote.set_nome_script(l)
-		sScripts = '''PROMPT --**************************** [ APLICANDO ''' + parPacote.NomeScript + '''] *********************--; 
-SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') INICIO_APLICACAO FROM DUAL; 
-@''' + parPacote.Diretorio + '''\\''' + parPacote.NomeScript + '''
-SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') FIM_APLICACAO FROM DUAL; '''	
-		text_file.write(sScripts + "\n")
+		corpo.set_nome_script(l)
+		corpo.texto()
 
-text_file.write('''PROMPT --**************************** [ LOG DE MENSAGENS ] ******************************--;
-SELECT * FROM LF_TAB_LOG_PACOTE WHERE CHAMADO =TRIM(' ''' + parPacote.NumeroChamado +''' '); ''' + "\n")
+		text_file.write(corpo.sScripts + "\n")
 
-
-
+text_file.write(corpo.sLogMensagem + "\n")
 text_file.write(corpo.sCompila + "\n")
 text_file.write(corpo.sAllErrors + "\n")
 text_file.write(corpo.sDadosAplic + "\n")
-
-
 
 #tkMessageBox.showinfo("lArquivos", str(lArquivos))
 #tkMessageBox.showinfo('sCaminho: ', sCaminho)

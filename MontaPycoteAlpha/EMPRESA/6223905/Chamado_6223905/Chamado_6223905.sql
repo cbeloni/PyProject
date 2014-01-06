@@ -1,4 +1,4 @@
-spool c:\sati\log_Chamado_EMPRESA.txt 
+spool c:\sati\log_Chamado_6223905.txt 
 PROMPT --**************************** [ INICIO DA APLICAÇAO ] ***********************************--;
 SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') INICIO_APLICACAO FROM DUAL; 
 SET SERVEROUTPUT OFF 
@@ -11,12 +11,24 @@ alter session set nls_date_format = 'dd/mm/yyyy';
 
 PROMPT --**************************** [ APLICANDO 'CRIANDO TABELA DE LOG DE MENSAGENS' ] *****--;
 @c:\SATI\LF_TAB_LOG_PACOTE_CREATE.SQL 
-PROMPT --**************************** [ APLICANDO 6223999] *********************--; 
+PROMPT --**************************** [ APLICANDO 01_P_CTM_ALT_PERM_6223905_221113_1000.SQL] *********************--; 
 SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') INICIO_APLICACAO FROM DUAL; 
-@c:\SATI\6223999
+@c:\SATI\01_P_CTM_ALT_PERM_6223905_221113_1000.SQL
+SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') FIM_APLICACAO FROM DUAL; 
+PROMPT --**************************** [ APLICANDO 02_P_CTM_RELAT_ALT_6223905_221113_1000.SQL] *********************--; 
+SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') INICIO_APLICACAO FROM DUAL; 
+@c:\SATI\02_P_CTM_RELAT_ALT_6223905_221113_1000.SQL
+SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') FIM_APLICACAO FROM DUAL; 
+PROMPT --**************************** [ APLICANDO 02_PWF_MENU_INSERT_6223999_221113_1000.sql] *********************--; 
+SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') INICIO_APLICACAO FROM DUAL; 
+@c:\SATI\02_PWF_MENU_INSERT_6223999_221113_1000.sql
+SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') FIM_APLICACAO FROM DUAL; 
+PROMPT --**************************** [ APLICANDO 03_P_CTM_ALTERARLOTE_6223999_221113_1000.SQL] *********************--; 
+SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') INICIO_APLICACAO FROM DUAL; 
+@c:\SATI\03_P_CTM_ALTERARLOTE_6223999_221113_1000.SQL
 SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') FIM_APLICACAO FROM DUAL; 
 PROMPT --**************************** [ LOG DE MENSAGENS ] ******************************--;
-SELECT * FROM LF_TAB_LOG_PACOTE WHERE CHAMADO =TRIM(' EMPRESA '); 
+SELECT * FROM LF_TAB_LOG_PACOTE WHERE CHAMADO =TRIM(' 6223905 '); 
 PROMPT --**************************** [ APLICANDO 'COMPILA2.SQL' ] ******************************--;
 @c:\SATI\compila2.sql 
 PROMPT --**************************** [ APLICANDO 'ALL_ERRORS.SQL' ] ****************************--;

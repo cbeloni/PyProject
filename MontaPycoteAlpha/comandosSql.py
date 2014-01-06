@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-class ParamPacotes(object):
+class CorpoPacote(object):
 	def __init__(self):
-		self.set_numero_chamado('12345678')
-		self.set_nome_script('padrao.sql')
+		self.set_numero_chamado('NAOINFORMADO')
+		self.set_nome_script('NAOINFORMADO.sql')
 		self.set_diretorio('c:\\SATI')
 
 	def set_numero_chamado(self,NumeroChamado):
@@ -15,39 +15,37 @@ class ParamPacotes(object):
 	def set_diretorio(self,Diretorio):
 		self.Diretorio = Diretorio
 
-class CorpoPacote(object):
-	param = ParamPacotes()		
-
-	sInicio = '''PROMPT --**************************** [ INICIO DA APLICAÇAO ] ***********************************--;
+	def texto (self):
+		self.sInicio = '''PROMPT --**************************** [ INICIO DA APLICAÇAO ] ***********************************--;
 SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') INICIO_APLICACAO FROM DUAL; 
 SET SERVEROUTPUT OFF 
 set linesize 1000 
 set pagesize 4000 
 set define off 
 '''
-	sAlter = '''PROMPT --**************************** [ ALTER SESSION PARA NLS_DATE_FORMAT = 'DD/MM/YYYY' ] *****--;
+		self.sAlter = '''PROMPT --**************************** [ ALTER SESSION PARA NLS_DATE_FORMAT = 'DD/MM/YYYY' ] *****--;
 alter session set nls_date_format = 'dd/mm/yyyy'; 
 '''
 
-	sTabLog = '''PROMPT --**************************** [ APLICANDO 'CRIANDO TABELA DE LOG DE MENSAGENS' ] *****--;
-@'''+ param.Diretorio + '''\LF_TAB_LOG_PACOTE_CREATE.SQL '''
+		self.sTabLog = '''PROMPT --**************************** [ APLICANDO 'CRIANDO TABELA DE LOG DE MENSAGENS' ] *****--;
+@'''+ self.Diretorio + '''\LF_TAB_LOG_PACOTE_CREATE.SQL '''
 
 #>>não funcionou
-	sScripts = '''PROMPT --**************************** [ APLICANDO ''' + param.NomeScript + '''] *********************--; 
+		self.sScripts = '''PROMPT --**************************** [ APLICANDO ''' + self.NomeScript + '''] *********************--; 
 SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') INICIO_APLICACAO FROM DUAL; 
-@''' + param.Diretorio + '''\\''' + param.NomeScript + '''
+@''' + self.Diretorio + '''\\''' + self.NomeScript + '''
 SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') FIM_APLICACAO FROM DUAL; ''' 
-	sLogMensagem = '''PROMPT --**************************** [ LOG DE MENSAGENS ] ******************************--;
-SELECT * FROM LF_TAB_LOG_PACOTE WHERE CHAMADO =TRIM(' ''' + param.NumeroChamado +''' '); '''
+		self.sLogMensagem = '''PROMPT --**************************** [ LOG DE MENSAGENS ] ******************************--;
+SELECT * FROM LF_TAB_LOG_PACOTE WHERE CHAMADO =TRIM(' ''' + self.NumeroChamado +''' '); '''
 #<<não funcionou
 
-	sCompila = '''PROMPT --**************************** [ APLICANDO 'COMPILA2.SQL' ] ******************************--;
-@''' + param.Diretorio + '''\compila2.sql '''
+		self.sCompila = '''PROMPT --**************************** [ APLICANDO 'COMPILA2.SQL' ] ******************************--;
+@''' + self.Diretorio + '''\compila2.sql '''
 
-	sAllErrors = '''PROMPT --**************************** [ APLICANDO 'ALL_ERRORS.SQL' ] ****************************--;
-@''' + param.Diretorio +'''\\all_errors.sql '''
+		self.sAllErrors = '''PROMPT --**************************** [ APLICANDO 'ALL_ERRORS.SQL' ] ****************************--;
+@''' + self.Diretorio +'''\\all_errors.sql '''
 	
-	sDadosAplic = '''PROMPT --**************************** [ DADOS DA APLICACAO ] *************************************--;
+		self.sDadosAplic = '''PROMPT --**************************** [ DADOS DA APLICACAO ] *************************************--;
 show user; 
 SELECT COD_HOLDING FROM LF_EMPRESA_HOLDING; 
 show parameters db_name; 

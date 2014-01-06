@@ -5,14 +5,20 @@ class ParamPacotes(object):
 		self._numero_chamado = numero_chamado
 		self._nome_script = nome_script
 		self._diretorio = diretorio
-
-class CorpoPacote(ParamPacotes):
-	def __init__ (self,numero_chamado,nome_script,diretorio):
+	def set_numero_chamado(self,numero_chamado):
 		self._numero_chamado = numero_chamado
-		self.sScripts = ''' PROMPT --**************************** [ APLICANDO ''' + numero_chamado + ''' ] *********************--; '''
+	def textos (self):
+		self.sScripts = ''' PROMPT --**************************** [ APLICANDO ''' + self._numero_chamado + ''' ] *********************--; '''
 
-cp = CorpoPacote('1234323','script','c:\\sati')
-#pp = ParamPacotes('1234323','script','c:\\sati')
+cp = ParamPacotes('31234343', ' abcde ', 'c:')
 
-print cp._numero_chamado
+cp.textos()
+
 print cp.sScripts
+
+cp.set_numero_chamado('12334325')
+
+cp.textos()
+
+print cp.sScripts
+

@@ -64,6 +64,10 @@ while valida:
 	    pacVersao += 1
 
 
+#instancia classe para parâmetros dos comandos do script sql
+parPacote = ParamPacotes()
+parPacote.set_numero_chamado(sChamado)
+
 sChamado = sChamadoVers
 
 #Copia arquivos default para pasta do chamado
@@ -76,8 +80,7 @@ os.system('cp '+ vDir +'/LF_TAB_LOG_PACOTE_CREATE.SQL Chamado_' + sChamado+'')
 
 #instancia classe com os comandos do script sql
 corpo = CorpoPacote()
-corpo.set_numero_chamado(sChamado)
-corpo.texto()
+corpo.sInicio
 
 text_file = open("Chamado_"+sChamado+"/Chamado_"+sChamado+".sql", "w")
 text_file.write("spool c:\sati\log_Chamado_" + sChamado +".txt \n")
@@ -87,15 +90,23 @@ text_file.write(corpo.sTabLog + "\n")
 
 for l in lArquivos:
 	if (l != ''):
-		corpo.set_nome_script(l)
-		corpo.texto()
+		parPacote.set_nome_script(l)
+		sScripts = '''PROMPT --**************************** [ APLICANDO ''' + parPacote.NomeScript + '''] *********************--; 
+SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') INICIO_APLICACAO FROM DUAL; 
+@''' + parPacote.Diretorio + '''\\''' + parPacote.NomeScript + '''
+SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') FIM_APLICACAO FROM DUAL; '''	
+		text_file.write(sScripts + "\n")
 
-		text_file.write(corpo.sScripts + "\n")
+text_file.write('''PROMPT --**************************** [ LOG DE MENSAGENS ] ******************************--;
+SELECT * FROM LF_TAB_LOG_PACOTE WHERE CHAMADO =TRIM(' ''' + parPacote.NumeroChamado +''' '); ''' + "\n")
 
-text_file.write(corpo.sLogMensagem + "\n")
+
+
 text_file.write(corpo.sCompila + "\n")
 text_file.write(corpo.sAllErrors + "\n")
 text_file.write(corpo.sDadosAplic + "\n")
+
+
 
 #tkMessageBox.showinfo("lArquivos", str(lArquivos))
 #tkMessageBox.showinfo('sCaminho: ', sCaminho)
