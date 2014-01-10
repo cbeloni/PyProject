@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gconfschemafile>
+  <schemalist>
+    <schema>
+      <key>/schemas/apps/nautilus-actions/configurations/type</key>
+      <applyto>/apps/nautilus-actions/configurations/34c0953a-8c01-44ea-9dd5-5703e47acbd5/type</applyto>
+      <type>string</type>
+      <default>Action</default>
+      <locale name="C">
+        <short>Tipo do item</short>
+        <long>Define se o item é uma ação ou um menu. Valores possíveis são:
+- "Action",
+- "Menu".
+O valor diferencia maiúsculas de minúsculas e não deve ser traduzido.</long>
+      </locale>
+      <owner>nautilus-actions</owner>
+    </schema>
+    <schema>
+      <key>/schemas/apps/nautilus-actions/configurations/iversion</key>
+      <applyto>/apps/nautilus-actions/configurations/34c0953a-8c01-44ea-9dd5-5703e47acbd5/iversion</applyto>
+      <type>int</type>
+      <default>3</default>
+      <locale name="C">
+        <short>Versão do formato</short>
+        <long>A versão do formato da configuração que será usada para controlar a compatibilidade reversa.</long>
+      </locale>
+      <owner>nautilus-actions</owner>
+    </schema>
+    <schema>
+      <key>/schemas/apps/nautilus-actions/configurations/items</key>
+      <applyto>/apps/nautilus-actions/configurations/34c0953a-8c01-44ea-9dd5-5703e47acbd5/items</applyto>
+      <type>list</type>
+      <list_type>string</list_type>
+      <default>[profile-zero]</default>
+      <locale name="C">
+        <short>Lista de ids de subitem</short>
+        <long>Lista ordenada das IDs dos subitens. Pode ser ações ou menus se o item é um menu, ou perfis caso o item seja uma ação.
+Se essa lista não existe ou está vazia para uma ação ou um menu, subitens são anexados na ordem das operações de leitura.</long>
+      </locale>
+      <owner>nautilus-actions</owner>
+    </schema>
+    <schema>
+      <key>/schemas/apps/nautilus-actions/configurations/label</key>
+      <applyto>/apps/nautilus-actions/configurations/34c0953a-8c01-44ea-9dd5-5703e47acbd5/label</applyto>
+      <type>string</type>
+      <locale name="C">
+        <default>Pycote</default>
+        <short>O nome do item de menu de contexto (obrigatório)</short>
+        <long>A etiqueta do item do menu que aparecerá no menu de contexto do gerenciador de arquivos quando a seleção corresponder com as preferências de condições de aparecimento.
+É também usado como padrão para a etiqueta de uma barra de ferramentas de uma ação.</long>
+      </locale>
+      <owner>nautilus-actions</owner>
+    </schema>
+    <schema>
+      <key>/schemas/apps/nautilus-actions/configurations/icon</key>
+      <applyto>/apps/nautilus-actions/configurations/34c0953a-8c01-44ea-9dd5-5703e47acbd5/icon</applyto>
+      <type>string</type>
+      <locale name="C">
+        <default>archive-insert</default>
+        <short>Icone do item de menu de contexto</short>
+        <long>O ícone que aparecerá próximo da etiqueta no menu de contexto do gerenciador de arquivos quando a seleção corresponder com as definições de condição de aparência.
+Pode ser o nome traduzido de um ícone temático, ou o caminho completo para uma imagem apropriada.</long>
+      </locale>
+      <owner>nautilus-actions</owner>
+    </schema>
+    <schema>
+      <key>/schemas/apps/nautilus-actions/configurations/target-location</key>
+      <applyto>/apps/nautilus-actions/configurations/34c0953a-8c01-44ea-9dd5-5703e47acbd5/target-location</applyto>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Direciona-se para a seleção do menu de contexto</short>
+        <long>Se a ação direciona-se para os menus de contexto do gerenciador de menus quando não há seleção, assim aplicando-se à localização atual.
+Note que menus são sempre candidatos potenciais para a exibição na seleção de menus de contexto, previsto que eles contêm pelo menos uma ação.
+Padrão como FALSE</long>
+      </locale>
+      <owner>nautilus-actions</owner>
+    </schema>
+    <schema>
+      <key>/schemas/apps/nautilus-actions/configurations/target-toolbar</key>
+      <applyto>/apps/nautilus-actions/configurations/34c0953a-8c01-44ea-9dd5-5703e47acbd5/target-toolbar</applyto>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Direciona-se para a barra de ferramentas</short>
+        <long>Se a ação é candidata a ser exibida na barra de ferramentas do gerenciador de arquivos.
+Isto aplica-se apenas para a localização atual.
+Note que menus nunca são exibidos na barra de ferramentas.
+Padrão como FALSE.</long>
+      </locale>
+      <owner>nautilus-actions</owner>
+    </schema>
+    <schema>
+      <key>/schemas/apps/nautilus-actions/configurations/toolbar-label</key>
+      <applyto>/apps/nautilus-actions/configurations/34c0953a-8c01-44ea-9dd5-5703e47acbd5/toolbar-label</applyto>
+      <type>string</type>
+      <locale name="C">
+        <default>Pycote</default>
+        <short>O nome do item da barra de ferramentas</short>
+        <long>A etiqueta exibida além do ícone na barra de ferramentas do gerenciador de arquivos.
+Note que a exibição atual pode depender das suas preferências de seu ambiente de trabalho.
+Padrão para etiqueta do menu de contexto quando não definida ou vazia.</long>
+      </locale>
+      <owner>nautilus-actions</owner>
+    </schema>
+    <schema>
+      <key>/schemas/apps/nautilus-actions/configurations/desc-name</key>
+      <applyto>/apps/nautilus-actions/configurations/34c0953a-8c01-44ea-9dd5-5703e47acbd5/profile-zero/desc-name</applyto>
+      <type>string</type>
+      <locale name="C">
+        <default>perfil</default>
+        <short>Nome do perfil</short>
+        <long>Pode ser usado como uma descrição para a função do perfil.
+Se não estiver definido, é padronizado para um nome auto-gerado.</long>
+      </locale>
+      <owner>nautilus-actions</owner>
+    </schema>
+    <schema>
+      <key>/schemas/apps/nautilus-actions/configurations/path</key>
+      <applyto>/apps/nautilus-actions/configurations/34c0953a-8c01-44ea-9dd5-5703e47acbd5/profile-zero/path</applyto>
+      <type>string</type>
+      <default>/opt/MontaPycote/main.py</default>
+      <locale name="C">
+        <short>Caminho do comando</short>
+        <long>O caminho do comando a ser executado quando o usuário selecionar o item do menu no menu de contexto do gerenciador de arquivos ou na barra de ferramentas.</long>
+      </locale>
+      <owner>nautilus-actions</owner>
+    </schema>
+    <schema>
+      <key>/schemas/apps/nautilus-actions/configurations/parameters</key>
+      <applyto>/apps/nautilus-actions/configurations/34c0953a-8c01-44ea-9dd5-5703e47acbd5/profile-zero/parameters</applyto>
+      <type>string</type>
+      <default>%F</default>
+      <locale name="C">
+        <short>Parâmetros do comando</short>
+        <long>Os parâmetros do comando a ser executado quando o usuário seleciona um item do menu no gerenciador de arquivos ou na barra de ferramentas.
+Os parâmetros podem conter algumas expressões especiais que são substituídas pelas informações fornecidas pelo gerenciador de arquivos antes de iniciar o comando:
+- para a versão "2.0":
+  %d: pasta base para os arquivos selecionado(s)
+  %f: o nome do arquivo selecionado ou o primeiro se muitos forem selecionados
+  %h: nome do computador do URI
+  %m: lista separada por espaços da base de nomes do(s) arquivo(s)/pasta(s) selecionado(s)
+  %M: lista separada por espaços do(s) arquivo(s)/pasta(s) selecionado(s) com seus caminhos completos
+  %p: número da porta da primeira URI
+  %R: lista separada por espaço das URIs selecionadas
+  %s: esquema da URI
+  %u: URI
+  %U: nome de usuário da URI
+  %%: um percentual atribuído - iniciando da versão "3":
+  %b: primeira base de nome
+  %B: lista separada por espaços da base de nomes do(s) arquivo(s)/pasta(s) selecionado(s)
+  %c: counta os arquivo(s)/pasta(s) selecionado(s)
+  %d: (primeiro) diretório base
+  %D: lista separada por espaços da lista de diretórios base do(s) arquivo(s)/pasta(s) selecionado(s)
+  %f: (primeiro) nome de arquivo
+  %F: lista separada por espaços de dos nomes do(s) arquivos do(s) arquivo(s)/pasta(s) selecionado(s)
+  %h: nome do computador da (primeira) URI
+  %m: (primeiro) tipo mime
+  %M: lista separada por espaço dos tipos mime do(s) arquivo(s)/pasta(s) selecionado(s)
+  %n: nome de usuário da (primeira) URI
+  %p: número da porta da (primeira) URI
+  %s: esquema da (primeira) URI
+  %u: (primeira) URI
+  %U: lista separada por espaços das URIs do(s) arquivo(s)/pasta(s) selecionado(s)
+  %w: (primeira) base de nomes sem extensão
+  %W: lista separada por espaços das bases de nome sem extensão
+  %x: (primeira) extensão
+  %X: lista separada por espaços da lista de extensões do(s) arquivo(s)/pasta(s) selecionado(s)
+  %%: um percentual
