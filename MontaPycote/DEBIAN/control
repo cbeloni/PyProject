@@ -1,7 +1,7 @@
 Section: misc
 Priority: optional
 Package: MontaPycote
-Version: 2.0
+Version: 2.1
 Maintainer: Cauê Beloni <cbeloni@gmail.com>
 Pre-Depends: python
 Architecture: all

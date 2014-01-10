@@ -10,7 +10,7 @@ from comandosSql import *
 # Verifica diretório
 vDirAlpha = "~/Documentos/PyProjects/MontaPycoteAlpha/"
 vDirProd  = "/opt/MontaPycote"
-vVersao = "1" # 0 = Produção, 1 = alpha
+vVersao = "0" # 0 = Produção, 1 = alpha
 sChamadoVers = ""
 
 #altera de acordo com vVersao

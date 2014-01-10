@@ -1,8 +1,0 @@
-Section: misc
-Priority: optional
-Package: PAuthentication
-Version: 2.1
-Maintainer: Cauê Beloni <cbeloni@gmail.com>
-Pre-Depends: python
-Architecture: all
-Description: Este pacote tem por finalidade executar somente besteira no sistema não perca o tempo com isso.
