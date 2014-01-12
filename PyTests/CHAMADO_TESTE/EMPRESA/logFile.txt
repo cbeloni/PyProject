@@ -1,2 +1,0 @@
-/opt/MontaPycote/main.py
-/home/beloni/Documentos/PyProjects/MontaPycoteAlpha/EMPRESA/6223999

@@ -19,14 +19,11 @@ if vVersao == "0":
 else:
 	vDir = vDirAlpha	
 
-#abre arquivo de log se parâmetro inicial não apenas o diretório atual. 
-#Isto é. Caso haja arquivos a serem tratrados
-param1 ='''['/home/beloni/Documentos/PyProjects/MontaPycoteAlpha/main.py']'''
-if (param1 != str(sys.argv)):	
-	text_file = open("logFile.txt", "w")
-	for param in sys.argv:
-	    text_file.write(param + "\n")
-	text_file.close()
+#abre arquivo de log 
+text_file = open("logFile.txt", "w")
+for param in sys.argv:
+    text_file.write(param + "\n")
+text_file.close()
 
 #pdb.set_trace()
 
