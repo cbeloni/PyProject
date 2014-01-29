@@ -36,7 +36,7 @@ SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') INICIO_APLICACAO FROM DUAL;
 @''' + self.Diretorio + '''\\''' + self.NomeScript + '''
 SELECT TO_CHAR(SYSDATE,'dd/mm/yyyy hh24:mi:ss') FIM_APLICACAO FROM DUAL; ''' 
 		self.sLogMensagem = '''PROMPT --**************************** [ LOG DE MENSAGENS ] ******************************--;
-SELECT * FROM LF_TAB_LOG_PACOTE WHERE CHAMADO =TRIM(' ''' + self.NumeroChamado +''' '); '''
+SELECT * FROM LF_TAB_LOG_PACOTE WHERE CHAMADO like TRIM('%''' + [self.NumeroChamado[0:self.NumeroChamado.find('_')], self.NumeroChamado] [ self.NumeroChamado.find('_') < 0] +'''%'); '''
 #<<não funcionou
 
 		self.sCompila = '''PROMPT --**************************** [ APLICANDO 'COMPILA2.SQL' ] ******************************--;
