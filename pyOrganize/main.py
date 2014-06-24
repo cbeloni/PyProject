@@ -30,7 +30,7 @@ class EditableSqlModel(QtSql.QSqlQueryModel):
         return ok
 
     def refresh(self):
-        self.setAtualizaData()
+        #self.setAtualizaData()
 
         self.setQuery('select chamado,empresa,tempo_desenvolvimento,data_inicial,data_final,ordem,tipo from ordem_atendimento order by ordem')
         self.setHeaderData(0, QtCore.Qt.Horizontal, "CHAMADO")
@@ -141,9 +141,11 @@ class EditableSqlModel(QtSql.QSqlQueryModel):
             data_final = data_final + timedelta(hours = - data_final.hour)
             data_final = data_final + timedelta(hours = 8 + hora_diferenca)
 
+        # para cada dia de desenvolvimento verifica se existe sábado (dia_semana = 5)    
         for i in range(0,dias):
             data_formatada = data_formatada + timedelta(days = 1)
             dia_semana = data_formatada.weekday()
+            # se dia da semana for sábado adiciona dois dias a data final
             if (dia_semana == 5):
                 data_final = data_final + timedelta(days = 2)
                 data_formatada = data_formatada + timedelta(days = 2)
@@ -187,6 +189,8 @@ class EditableSqlModel(QtSql.QSqlQueryModel):
                 query_date.addBindValue(q.value(colChamado))
 
                 query_date.exec_()
+            
+        self.refresh()
 
 class FrmMenu(QtGui.QWidget):
     def __init__(self,title, model):
@@ -212,12 +216,14 @@ class FrmMenu(QtGui.QWidget):
         self.btnPostergar = QtGui.QPushButton('Postergar', self)
         self.btnInserir   = QtGui.QPushButton('Inserir', self)
         self.btnExcluir   = QtGui.QPushButton('Excluir', self)
+        self.btnRefresh   = QtGui.QPushButton('Refresh', self)
 
-        hbox.addWidget(self.table_view, 0, 2, 5, 1)
+        hbox.addWidget(self.table_view, 0, 2, 6, 1)
         hbox.addWidget(self.btnPriorizar,0,1)
         hbox.addWidget(self.btnPostergar,1,1)
         hbox.addWidget(self.btnInserir,2,1)
         hbox.addWidget(self.btnExcluir,3,1)
+        hbox.addWidget(self.btnRefresh,4,1)
 
         self.setLayout(hbox)
 
@@ -273,6 +279,7 @@ if __name__ == '__main__':
     frm = FrmMenu("Editable Query Model", editableModel)
     frm.btnPriorizar.clicked.connect(editableModel.setPriorizar)
     frm.btnPostergar.clicked.connect(editableModel.setPostergar)
+    frm.btnRefresh.clicked.connect(editableModel.setAtualizaData)
     frm.show()
 
     sys.exit(app.exec_())                
