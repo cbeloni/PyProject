@@ -129,7 +129,7 @@ class EditableSqlModel(QtSql.QSqlQueryModel):
             data_final = data_final + timedelta(hours = hora_diferenca)
 
         #verifica se o horário de almoço será adicionado somente para o dia corrente
-        if data_final.hour >= 12 and data_final.hour <= 18 and tempo > 4 and hora_diferenca < -4:
+        if data_final.hour >= 12 and data_final.hour <= 13:
             data_final = data_final + timedelta(hours = 1)
 
         #Caso após adicionar a diferença de horas o valor ultrapassar o horário comercial é adicionado mais um dia e inclída as horas da 
