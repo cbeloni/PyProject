@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 import sqlite3
 from datetime import *
+from time import strptime
 from PySide import QtCore, QtGui, QtSql
 
 class EditableSqlModel(QtSql.QSqlQueryModel):
@@ -31,13 +32,14 @@ class EditableSqlModel(QtSql.QSqlQueryModel):
     def refresh(self):
         self.setAtualizaData()
 
-        self.setQuery('select chamado,empresa,tempo_desenvolvimento,data_prevista,data_atual,ordem from ordem_atendimento order by ordem')
+        self.setQuery('select chamado,empresa,tempo_desenvolvimento,data_inicial,data_final,ordem,tipo from ordem_atendimento order by ordem')
         self.setHeaderData(0, QtCore.Qt.Horizontal, "CHAMADO")
         self.setHeaderData(1, QtCore.Qt.Horizontal, "EMPRESA")
         self.setHeaderData(2, QtCore.Qt.Horizontal, "TEMPO DEV.")
-        self.setHeaderData(3, QtCore.Qt.Horizontal, "DATA PREV.")
-        self.setHeaderData(4, QtCore.Qt.Horizontal, "DATA ATUAL")
-        self.setHeaderData(4, QtCore.Qt.Horizontal, "ORDEM")
+        self.setHeaderData(3, QtCore.Qt.Horizontal, "DATA INI.")
+        self.setHeaderData(4, QtCore.Qt.Horizontal, "DATA FINAL")
+        self.setHeaderData(5, QtCore.Qt.Horizontal, "ORDEM")
+        self.setHeaderData(6, QtCore.Qt.Horizontal, "TIPO")
 
     def setEmpresa(self, chamado, empresa):
         query = QtSql.QSqlQuery()
@@ -68,9 +70,9 @@ class EditableSqlModel(QtSql.QSqlQueryModel):
 
             dataOrdem = self.data(indexOrdem)
             dataChamado = self.data(indexChamado)
-            print ("dataOrdem: " + str(dataOrdem)) 
-            print ("dataChamado: " + str(dataChamado)) 
-            print ("valor_cursor_count: " + str(valor_cursor_count)) 
+            #print ("dataOrdem: " + str(dataOrdem)) 
+            #print ("dataChamado: " + str(dataChamado)) 
+            #print ("valor_cursor_count: " + str(valor_cursor_count)) 
 
         if dataOrdem == 1 and peso == -1:
             print ("Não é possível priorizar o primeiro atendimento")
@@ -104,22 +106,47 @@ class EditableSqlModel(QtSql.QSqlQueryModel):
         #data = '28-10-2014 08:30'
         data_formatada = datetime.strptime(data, '%d-%m-%Y %H:%M')
 
-        #tempo = 31
+        hora_diferenca = data_formatada.hour - 8
+
+        if hora_diferenca != 0:
+            hora_diferenca *= -1
+            data_formatada = data_formatada + timedelta(hours = hora_diferenca)
+
         tempo = int(tempo_de_desenvolvimento)
 
-        print (tempo)
-
         horas = tempo % 8
-        print ("horas: " + str(horas))
+        #print ("horas: " + str(horas))
 
         dias = tempo / 8
-        print ("dias: " + str(dias))
+        #print ("dias: " + str(dias))
 
         data_days = data_formatada + timedelta(days = dias)
         data_final = data_days + timedelta(hours = horas)
 
-        if data_final.hour >= 12:
+        #adiciona novamente as horas subtraidas para o cálculo de dias e horas
+        if hora_diferenca != 0:
+            hora_diferenca *= -1
+            data_final = data_final + timedelta(hours = hora_diferenca)
+
+        #verifica se o horário de almoço será adicionado somente para o dia corrente
+        if data_final.hour >= 12 and data_final.hour <= 18 and tempo > 4 and hora_diferenca < -4:
             data_final = data_final + timedelta(hours = 1)
+
+        #Caso após adicionar a diferença de horas o valor ultrapassar o horário comercial é adicionado mais um dia e inclída as horas da 
+        #diferença
+        if  data_final.hour >= 18:
+            hora_diferenca = data_final.hour - 17
+            data_final = data_final + timedelta(days = 1)
+            dias += 1
+            data_final = data_final + timedelta(hours = - data_final.hour)
+            data_final = data_final + timedelta(hours = 8 + hora_diferenca)
+
+        for i in range(0,dias):
+            data_formatada = data_formatada + timedelta(days = 1)
+            dia_semana = data_formatada.weekday()
+            if (dia_semana == 5):
+                data_final = data_final + timedelta(days = 2)
+                data_formatada = data_formatada + timedelta(days = 2)
 
         #print (data_final.strftime('%d-%m-%Y %H:%M'))
         return data_final.strftime('%d-%m-%Y %H:%M')
@@ -129,30 +156,43 @@ class EditableSqlModel(QtSql.QSqlQueryModel):
         q = QtSql.QSqlQuery("select * from ordem_atendimento order by ordem asc")
         rec = q.record()
         colChamado = rec.indexOf("chamado")
-        colDataPrevista = rec.indexOf("data_prevista")
+        colDataPrevista = rec.indexOf("data_inicial")
         colTempoDesenvolvimento = rec.indexOf("tempo_desenvolvimento")
+        query_date = QtSql.QSqlQuery()
 
         #print (self.setDataPrevisao(19,'28-10-2014 08:30'))
         while q.next():
             #print (q.value(colChamado))
             if vPrimerio:
                 vPrimerio = False
-                data_prevista = self.setDataPrevisao(q.value(colTempoDesenvolvimento),q.value(colDataPrevista))
-            else:                
-                query_date = QtSql.QSqlQuery()
-                query_date.prepare('update ordem_atendimento set data_prevista = ? where chamado = ?')
-                query_date.addBindValue(data_prevista)
+                data_final = self.setDataPrevisao(q.value(colTempoDesenvolvimento),q.value(colDataPrevista))
+                query_date.prepare('update ordem_atendimento set data_final = ? where chamado = ?')
+                query_date.addBindValue(data_final)
                 query_date.addBindValue(q.value(colChamado))
 
                 query_date.exec_()
 
-                data_prevista = self.setDataPrevisao(q.value(colTempoDesenvolvimento),data_prevista)
+
+            else:                
+                query_date.prepare('update ordem_atendimento set data_inicial = ? where chamado = ?')
+                query_date.addBindValue(data_final)
+                query_date.addBindValue(q.value(colChamado))
+
+                query_date.exec_()
+
+                data_final = self.setDataPrevisao(q.value(colTempoDesenvolvimento),data_final)
+
+                query_date.prepare('update ordem_atendimento set data_final = ? where chamado = ?')
+                query_date.addBindValue(data_final)
+                query_date.addBindValue(q.value(colChamado))
+
+                query_date.exec_()
 
 class FrmMenu(QtGui.QWidget):
     def __init__(self,title, model):
         super(FrmMenu, self).__init__()
 
-        x, y, w, h = 300, 300, 725, 300
+        x, y, w, h = 300, 300, 713, 300
         self.setGeometry(x, y, w, h)
 
 
@@ -210,13 +250,14 @@ def printaMensagem():
         print (id)
 
 def initializeModel(model):
-    model.setQuery('select chamado,empresa,tempo_desenvolvimento,data_prevista,data_atual,ordem from ordem_atendimento order by ordem')
+    model.setQuery('select chamado,empresa,tempo_desenvolvimento,data_inicial,data_final,ordem,tipo from ordem_atendimento order by ordem')
     model.setHeaderData(0, QtCore.Qt.Horizontal, "CHAMADO")
     model.setHeaderData(1, QtCore.Qt.Horizontal, "EMPRESA")
     model.setHeaderData(2, QtCore.Qt.Horizontal, "TEMPO DEV.")
-    model.setHeaderData(3, QtCore.Qt.Horizontal, "DATA PREV.")
-    model.setHeaderData(4, QtCore.Qt.Horizontal, "DATA ATUAL")
+    model.setHeaderData(3, QtCore.Qt.Horizontal, "DATA INI.")
+    model.setHeaderData(4, QtCore.Qt.Horizontal, "DATA FINAL")
     model.setHeaderData(5, QtCore.Qt.Horizontal, "ORDEM")
+    model.setHeaderData(6, QtCore.Qt.Horizontal, "TIPO")
 
 if __name__ == '__main__':
     import sys
