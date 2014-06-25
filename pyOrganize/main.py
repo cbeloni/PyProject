@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
+"""
+Previsão Atendimentos chamados
+
+autor: Cauê Beloni
+revisor: Rodolfo Mielitz
+Criado: 24/06/2014
+"""
+
 import sqlite3
 from datetime import *
 from time import strptime
@@ -18,14 +26,14 @@ class EditableSqlModel(QtSql.QSqlQueryModel):
         if index.column() not in (1, 2):
             return False
         primaryKeyIndex = self.index(index.row(), 0)
-        chamado = self.data(primaryKeyIndex)
+        self.chamado_corrente = self.data(primaryKeyIndex)
 
         self.clear()
 
         if index.column() == 1:
-            ok = self.setEmpresa(chamado, value)
+            ok = self.setEmpresa(self.chamado_corrente, value)
         elif index.column() == 2:
-            ok = self.setTempoDesenvolvimento(chamado, value)
+            ok = self.setTempoDesenvolvimento(self.chamado_corrente, value)
         self.refresh()
         return ok
 
@@ -192,13 +200,43 @@ class EditableSqlModel(QtSql.QSqlQueryModel):
             
         self.refresh()
 
+    def setInserirChamado(self,numero_chamado,empresa,tempo_desenvolvimento,tipo_chamado):
+        query = QtSql.QSqlQuery("select count(*) from ordem_atendimento")    
+        query.next()
+        valor_cursor_count = str(query.value(0)+1)
+        query.exec_() 
+
+        query.prepare('insert into ordem_atendimento(chamado,empresa,tempo_desenvolvimento,tipo,ordem) values (?,?,?,?,?)')
+        query.addBindValue(numero_chamado)
+        query.addBindValue(empresa)
+        query.addBindValue(tempo_desenvolvimento)
+        query.addBindValue(tipo_chamado)
+        query.addBindValue(valor_cursor_count)
+        query.exec_()
+
+        return True
+
+    def setDeletarChamado(self):
+        for index in frm.table_view.selectionModel().selectedRows():
+            indexRow = index.row()       
+            indexChamado = self.index(index.row(), 0)          
+            dataChamado = self.data(indexChamado)
+
+        query = QtSql.QSqlQuery()    
+        query.prepare('delete from ordem_atendimento where chamado = ?')
+        query.addBindValue(dataChamado)
+        query.exec_()
+
+        self.refresh()
+        return True
+
 class FrmMenu(QtGui.QWidget):
     def __init__(self,title, model):
         super(FrmMenu, self).__init__()
 
-        x, y, w, h = 300, 300, 713, 300
+        x, y, w, h = 300, 300, 800, 300
         self.setGeometry(x, y, w, h)
-
+        self.setWindowTitle("Previsao Atendimentos - DBA")
 
         hbox = QtGui.QGridLayout()
 
@@ -212,11 +250,11 @@ class FrmMenu(QtGui.QWidget):
         #self.table_selecao = self.table_view.selectionModel()                       
         #self.table_selecao.selectionChanged.connect(editableModel.setPriorizar) 
 
-        self.btnPriorizar = QtGui.QPushButton('Priorizar', self)
-        self.btnPostergar = QtGui.QPushButton('Postergar', self)
-        self.btnInserir   = QtGui.QPushButton('Inserir', self)
-        self.btnExcluir   = QtGui.QPushButton('Excluir', self)
-        self.btnRefresh   = QtGui.QPushButton('Refresh', self)
+        self.btnPriorizar = QtGui.QPushButton('&Priorizar', self)
+        self.btnPostergar = QtGui.QPushButton('P&ostergar', self)
+        self.btnInserir   = QtGui.QPushButton('&Inserir', self)
+        self.btnExcluir   = QtGui.QPushButton('&Excluir', self)
+        self.btnRefresh   = QtGui.QPushButton('&Refresh', self)
 
         hbox.addWidget(self.table_view, 0, 2, 6, 1)
         hbox.addWidget(self.btnPriorizar,0,1)
@@ -230,6 +268,44 @@ class FrmMenu(QtGui.QWidget):
     def show_and_raise(self):
         self.show()
         self.raise_()
+
+class FrmInserir(QtGui.QDialog):
+
+    def __init__(self):
+        super(FrmInserir, self).__init__()
+
+        self.createFormGroupBox()
+
+        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        #editableModel.setInserirChamado('6000','Red Hat','8','R')
+        buttonBox.accepted.connect(self.inserirChamado)
+        buttonBox.rejected.connect(self.reject)
+
+        mainLayout = QtGui.QVBoxLayout()
+        mainLayout.addWidget(self.formGroupBox)
+        mainLayout.addWidget(buttonBox)
+        self.setLayout(mainLayout)
+
+        self.setWindowTitle("Inserir novo chamado")
+
+    def createFormGroupBox(self):
+        self.formGroupBox = QtGui.QGroupBox("")
+        layout = QtGui.QFormLayout()
+        self.lineEditChamado          = QtGui.QLineEdit()
+        self.lineEditEmpresa          = QtGui.QLineEdit()
+        self.spinTempoDesenvolvimento = QtGui.QSpinBox()
+        self.lineEditTipo             = QtGui.QLineEdit()
+
+        layout.addRow(QtGui.QLabel("Numero chamado:"), self.lineEditChamado)
+        layout.addRow(QtGui.QLabel("Empresa:"), self.lineEditEmpresa)
+        layout.addRow(QtGui.QLabel("Tempo desenvolvimento:"), self.spinTempoDesenvolvimento)
+        layout.addRow(QtGui.QLabel("Tipo do chamado:"), self.lineEditTipo)
+        self.formGroupBox.setLayout(layout)
+
+    def inserirChamado(self):
+        editableModel.setInserirChamado(frmInserir.lineEditChamado.text(),frmInserir.lineEditEmpresa.text(),frmInserir.spinTempoDesenvolvimento.text(),frmInserir.lineEditTipo.text())
+        #editableModel.refresh()
+        frmInserir.close()
 
 def abreConexao():
     ''' Abreconexao (nome do banco de dados sqlite)
@@ -249,11 +325,8 @@ def abreConexao():
     return True
 
 def printaMensagem():
-    print ("Clicado")     
-    for index in frm.table_view.selectionModel().selectedRows():
-        print('Row %d is selected' % index.row())
-        id = editableModel.data(index, 0)
-        print (id)
+    print ("Printado")     
+    print (frmInserir.lineEditChamado.text())
 
 def initializeModel(model):
     model.setQuery('select chamado,empresa,tempo_desenvolvimento,data_inicial,data_final,ordem,tipo from ordem_atendimento order by ordem')
@@ -265,6 +338,11 @@ def initializeModel(model):
     model.setHeaderData(5, QtCore.Qt.Horizontal, "ORDEM")
     model.setHeaderData(6, QtCore.Qt.Horizontal, "TIPO")
 
+def abrirFormInserir():
+    frmInserir.exec_()
+    #sys.exit(frmInserir.exec_())
+
+
 if __name__ == '__main__':
     import sys
 
@@ -274,12 +352,16 @@ if __name__ == '__main__':
         sys.exit(1)
 
     editableModel = EditableSqlModel()
+    frmInserir = FrmInserir()
 
     initializeModel(editableModel)
     frm = FrmMenu("Editable Query Model", editableModel)
     frm.btnPriorizar.clicked.connect(editableModel.setPriorizar)
     frm.btnPostergar.clicked.connect(editableModel.setPostergar)
     frm.btnRefresh.clicked.connect(editableModel.setAtualizaData)
+    frm.btnInserir.clicked.connect(abrirFormInserir)
+    frm.btnExcluir.clicked.connect(editableModel.setDeletarChamado)
     frm.show()
 
     sys.exit(app.exec_())                
+
