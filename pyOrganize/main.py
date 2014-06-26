@@ -217,15 +217,31 @@ class EditableSqlModel(QtSql.QSqlQueryModel):
         return True
 
     def setDeletarChamado(self):
-        for index in frm.table_view.selectionModel().selectedRows():
-            indexRow = index.row()       
+        query = QtSql.QSqlQuery("select count(*) from ordem_atendimento")    
+        query.next()
+        valor_cursor_count = query.value(0)+1
+        query.exec_() 
+
+        for index in frm.table_view.selectionModel().selectedRows():    
             indexChamado = self.index(index.row(), 0)          
-            dataChamado = self.data(indexChamado)
+            indexOrdem = self.index(index.row(), 5)                        
+
+            dataOrdem = self.data(indexOrdem)
+            dataChamado = self.data(indexChamado)    
 
         query = QtSql.QSqlQuery()    
         query.prepare('delete from ordem_atendimento where chamado = ?')
         query.addBindValue(dataChamado)
         query.exec_()
+
+        for i in range(dataOrdem,valor_cursor_count):  
+                query.prepare('update ordem_atendimento set ordem = ? where ordem = ?')
+                query.addBindValue(dataOrdem)
+                query.addBindValue(dataOrdem+1)                                
+
+                dataOrdem += 1
+
+                query.exec_()
 
         self.refresh()
         return True
@@ -364,4 +380,3 @@ if __name__ == '__main__':
     frm.show()
 
     sys.exit(app.exec_())                
-
