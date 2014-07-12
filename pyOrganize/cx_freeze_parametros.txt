@@ -1,1 +1,0 @@
-python cxfreeze main.py --target-dir dist --base-name Win32GUI --include-modules atexit,PySide.QtNetwork,sqlite3 --icon organize.ico
