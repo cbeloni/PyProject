@@ -17,13 +17,13 @@ class DadosSqlModel(QtSql.QSqlQueryModel):
     def flags(self, index):
         flags = super(DadosSqlModel, self).flags(index)
 
-        if index.column() in (1, 2, 7, 8):
+        if index.column() in (1, 2, 3, 7, 8):
             flags |= QtCore.Qt.ItemIsEditable
 
         return flags
 
     def setData(self, index, value, role):
-        if index.column() not in (1, 2, 7, 8):
+        if index.column() not in (1, 2, 3, 7, 8):
             return False
         primaryKeyIndex = self.index(index.row(), 0)
         self.chamado_corrente = self.data(primaryKeyIndex)
@@ -34,6 +34,8 @@ class DadosSqlModel(QtSql.QSqlQueryModel):
             ok = self.setEmpresa(self.chamado_corrente, value)
         elif index.column() == 2: #TEMPO DESENVOLVIMENTO
             ok = self.setTempoDesenvolvimento(self.chamado_corrente, value)
+        elif index.column() == 3: #DATA INICIAL
+            ok = self.setDataInicial(self.chamado_corrente, value)
         elif index.column() == 7: #STATUS
             ok = self.setStatus(self.chamado_corrente, value)
         elif index.column() == 8: #RECURSO
@@ -43,7 +45,7 @@ class DadosSqlModel(QtSql.QSqlQueryModel):
         return ok
 
     def refresh(self):
-        #self.setAtualizaData()        
+        #self.setAtualizaData()
 
         self.setQuery('select chamado,empresa,tempo_desenvolvimento,data_inicial,data_final,ordem,tipo,status,recurso from ordem_atendimento order by ordem')
         self.setHeaderData(0, QtCore.Qt.Horizontal, "CHAMADO")
@@ -75,6 +77,14 @@ class DadosSqlModel(QtSql.QSqlQueryModel):
         self.refresh()
         return query.exec_()
 
+    def setDataInicial(self, chamado, data_inicial):
+        query = QtSql.QSqlQuery()
+        query.prepare('update ordem_atendimento set data_inicial = ? where chamado = ?')
+        query.addBindValue(data_inicial)
+        query.addBindValue(chamado)
+        self.refresh()
+        return query.exec_()
+
     def setRecurso(self, chamado, recurso):
         query = QtSql.QSqlQuery()
         query.prepare('update ordem_atendimento set recurso = ? where chamado = ?')
@@ -92,15 +102,22 @@ class DadosSqlModel(QtSql.QSqlQueryModel):
         self.refresh()
         return query.exec_()
 
-    def setAlteraOrdem (self, peso):
-        cursor_count = QtSql.QSqlQuery("select count(*) from ordem_atendimento")    
+    def getCursorCount(self):
+        cursor_count = QtSql.QSqlQuery("select count(*) from ordem_atendimento")
         cursor_count.next()
         valor_cursor_count = str(cursor_count.value(0))
 
+        if valor_cursor_count == 'None':
+            valor_cursor_count = '0'
+        return valor_cursor_count
+
+    def setAlteraOrdem (self, peso):
+        valor_cursor_count = self.getCursorCount()
+
         for index in frm.table_view.selectionModel().selectedRows():
             indexRow = index.row()
-            indexOrdem = self.index(index.row(), 5)          
-            indexChamado = self.index(index.row(), 0)          
+            indexOrdem = self.index(index.row(), 5)
+            indexChamado = self.index(index.row(), 0)
 
             dataOrdem = self.data(indexOrdem)
             dataChamado = self.data(indexChamado)
@@ -110,8 +127,8 @@ class DadosSqlModel(QtSql.QSqlQueryModel):
             return
         elif str(dataOrdem) == valor_cursor_count and peso == 1:
             print ("Não é possível postergar o último atendimento")
-            return          
-        
+            return
+
         query = QtSql.QSqlQuery()
         query.prepare('update ordem_atendimento set ordem = ? where ordem = ?')
         query.addBindValue(dataOrdem)
@@ -121,20 +138,21 @@ class DadosSqlModel(QtSql.QSqlQueryModel):
         query.prepare('update ordem_atendimento set ordem = ? where chamado = ?')
         query.addBindValue(dataOrdem + peso)
         query.addBindValue(dataChamado)
-        query.exec_()            
+        query.exec_()
 
         self.refresh()
 
-        frm.table_view.selectRow(indexRow + peso) 
+        frm.table_view.selectRow(indexRow + peso)
 
     def setPriorizar (self):
-        self.setAlteraOrdem(-1)      
-    
+        self.setAlteraOrdem(-1)
+
     def setPostergar (self):
         self.setAlteraOrdem(1)
 
     def setDataPrevisao (self,tempo_de_desenvolvimento,data):
         #data = '28-10-2014 08:30'
+        data_incial = datetime.strptime(data, '%d-%m-%Y %H:%M')
         data_formatada = datetime.strptime(data, '%d-%m-%Y %H:%M')
 
         hora_diferenca = data_formatada.hour - 8
@@ -160,10 +178,10 @@ class DadosSqlModel(QtSql.QSqlQueryModel):
             data_final = data_final + timedelta(hours = hora_diferenca)
 
         #verifica se o horário de almoço será adicionado somente para o dia corrente
-        if data_final.hour >= 12 and data_final.hour <= 13:
+        if ((data_final.hour >= 12 and data_final.hour <= 13) or (data_incial.day != data_final.day and data_final.hour >= 12)):
             data_final = data_final + timedelta(hours = 1)
 
-        #Caso após adicionar a diferença de horas o valor ultrapassar o horário comercial é adicionado mais um dia e inclída as horas da 
+        #Caso após adicionar a diferença de horas o valor ultrapassar o horário comercial é adicionado mais um dia e inclída as horas da
         #diferença
         if  data_final.hour >= 18:
             hora_diferenca = data_final.hour - 17
@@ -172,7 +190,7 @@ class DadosSqlModel(QtSql.QSqlQueryModel):
             data_final = data_final + timedelta(hours = - data_final.hour)
             data_final = data_final + timedelta(hours = 8 + hora_diferenca)
 
-        # para cada dia de desenvolvimento verifica se existe sábado (dia_semana = 5)    
+        # para cada dia de desenvolvimento verifica se existe sábado (dia_semana = 5)
         for i in range(0,dias):
             data_formatada = data_formatada + timedelta(days = 1)
             dia_semana = data_formatada.weekday()
@@ -193,20 +211,15 @@ class DadosSqlModel(QtSql.QSqlQueryModel):
         colTempoDesenvolvimento = rec.indexOf("tempo_desenvolvimento")
         query_date = QtSql.QSqlQuery()
 
-        #print (self.setDataPrevisao(19,'28-10-2014 08:30'))
         while q.next():
-            #print (q.value(colChamado))
             if vPrimerio:
                 vPrimerio = False
                 data_final = self.setDataPrevisao(q.value(colTempoDesenvolvimento),q.value(colDataPrevista))
                 query_date.prepare('update ordem_atendimento set data_final = ? where chamado = ?')
                 query_date.addBindValue(data_final)
                 query_date.addBindValue(q.value(colChamado))
-
                 query_date.exec_()
-
-
-            else:                
+            else:
                 query_date.prepare('update ordem_atendimento set data_inicial = ? where chamado = ?')
                 query_date.addBindValue(data_final)
                 query_date.addBindValue(q.value(colChamado))
@@ -220,47 +233,45 @@ class DadosSqlModel(QtSql.QSqlQueryModel):
                 query_date.addBindValue(q.value(colChamado))
 
                 query_date.exec_()
-            
+
         self.refresh()
 
     def setInserirChamado(self,numero_chamado,empresa,tempo_desenvolvimento,tipo_chamado):
-        query = QtSql.QSqlQuery("select count(*) from ordem_atendimento")    
-        query.next()
-        valor_cursor_count = str(query.value(0)+1)
-        query.exec_() 
-
-        query.prepare('insert into ordem_atendimento(chamado,empresa,tempo_desenvolvimento,tipo,ordem) values (?,?,?,?,?)')
+        valor_cursor_count = int(self.getCursorCount()) + 1
+        data_atual = datetime.now()
+        data_atual = data_atual.strftime('%d-%m-%Y %H:%M')
+        query = QtSql.QSqlQuery()
+        query.prepare('insert into ordem_atendimento(chamado,empresa,tempo_desenvolvimento,tipo,ordem,data_inicial) values (?,?,?,?,?,?)')
         query.addBindValue(numero_chamado)
         query.addBindValue(empresa)
         query.addBindValue(tempo_desenvolvimento)
         query.addBindValue(tipo_chamado)
         query.addBindValue(valor_cursor_count)
+        query.addBindValue(data_atual)
         query.exec_()
+        #print (type(data_atual))
 
         return True
 
     def setDeletarChamado(self):
-        query = QtSql.QSqlQuery("select count(*) from ordem_atendimento")    
-        query.next()
-        valor_cursor_count = query.value(0)+1
-        query.exec_() 
+        valor_cursor_count = int(self.getCursorCount()) + 1
 
-        for index in frm.table_view.selectionModel().selectedRows():    
-            indexChamado = self.index(index.row(), 0)          
-            indexOrdem = self.index(index.row(), 5)                        
+        for index in frm.table_view.selectionModel().selectedRows():
+            indexChamado = self.index(index.row(), 0)
+            indexOrdem = self.index(index.row(), 5)
 
             dataOrdem = self.data(indexOrdem)
-            dataChamado = self.data(indexChamado)    
+            dataChamado = self.data(indexChamado)
 
-        query = QtSql.QSqlQuery()    
+        query = QtSql.QSqlQuery()
         query.prepare('delete from ordem_atendimento where chamado = ?')
         query.addBindValue(dataChamado)
         query.exec_()
 
-        for i in range(dataOrdem,valor_cursor_count):  
+        for i in range(dataOrdem,valor_cursor_count):
                 query.prepare('update ordem_atendimento set ordem = ? where ordem = ?')
                 query.addBindValue(dataOrdem)
-                query.addBindValue(dataOrdem+1)                                
+                query.addBindValue(dataOrdem+1)
 
                 dataOrdem += 1
 
@@ -285,8 +296,8 @@ class FrmMenu(QtGui.QWidget):
         self.table_view.selectRow(0)
         #print (self.table_view.columnWidth(1))
         # handle ao alterar seleção de row em table_view
-        #self.table_selecao = self.table_view.selectionModel()                       
-        #self.table_selecao.selectionChanged.connect(editableModel.setPriorizar) 
+        #self.table_selecao = self.table_view.selectionModel()
+        #self.table_selecao.selectionChanged.connect(editableModel.setPriorizar)
 
         x, y, w, h = 300, 300, 134, 300
         for i in range(0,9):
@@ -346,7 +357,10 @@ class FrmInserir(QtGui.QDialog):
         self.formGroupBox.setLayout(layout)
 
     def inserirChamado(self):
-        dados_sql_model.setInserirChamado(frmInserir.lineEditChamado.text(),frmInserir.lineEditEmpresa.text(),frmInserir.spinTempoDesenvolvimento.text(),frmInserir.lineEditTipo.text())
+        if dados_sql_model.setInserirChamado(frmInserir.lineEditChamado.text(),frmInserir.lineEditEmpresa.text(),frmInserir.spinTempoDesenvolvimento.text(),frmInserir.lineEditTipo.text()):
+            print ("Inserido com sucesso")
+        else:
+            print ("Erro ao inserir registro")
         #editableModel.refresh()
         frmInserir.close()
 
@@ -354,7 +368,7 @@ def defineTamanhoTela():
         x, y, w, h = 0, 0, 223, 0
         for i in range(0,8):
             w += frm.table_view.columnWidth(i)
-        print (w)    
+        print (w)
         frm.setGeometry(x, y, w, h)
 
 def abreConexao():
@@ -370,12 +384,12 @@ def abreConexao():
                               "how to build it.\n\nClick Cancel to exit."),
                 QtGui.QMessageBox.Cancel, QtGui.QMessageBox.NoButton)
         return False
-    
+
     query = QtSql.QSqlQuery()
     return True
 
 def printaMensagem():
-    print ("Printado")     
+    print ("Printado")
     print (frmInserir.lineEditChamado.text())
 
 def initializeModel(model):
@@ -393,7 +407,6 @@ def initializeModel(model):
 def abrirFormInserir():
     frmInserir.exec_()
     #sys.exit(frmInserir.exec_())
-
 
 if __name__ == '__main__':
     import sys
@@ -416,4 +429,4 @@ if __name__ == '__main__':
     frm.btnExcluir.clicked.connect(dados_sql_model.setDeletarChamado)
     frm.show()
 
-    sys.exit(app.exec_())                
+    sys.exit(app.exec_())
