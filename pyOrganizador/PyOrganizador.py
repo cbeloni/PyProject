@@ -152,6 +152,9 @@ class DadosSqlModel(QtSql.QSqlQueryModel):
 
     def setDataPrevisao (self,tempo_de_desenvolvimento,data):
         #data = '28-10-2014 08:30'
+        if len(data) > 16: 
+            data = data[4:]
+        dia_semana_extenso = {6: 'Dom ', 0: 'Seg ', 1: 'Ter ', 2:'Qua ', 3: 'Qui ', 4:'Sex ', 5: 'Sáb '}
         data_incial = datetime.strptime(data, '%d-%m-%Y %H:%M')
         data_formatada = datetime.strptime(data, '%d-%m-%Y %H:%M')
 
@@ -199,8 +202,10 @@ class DadosSqlModel(QtSql.QSqlQueryModel):
                 data_final = data_final + timedelta(days = 2)
                 data_formatada = data_formatada + timedelta(days = 2)
 
+        dia_semana = data_final.weekday()        
+        data_final_texto = dia_semana_extenso[dia_semana] + data_final.strftime('%d-%m-%Y %H:%M')
         #print (data_final.strftime('%d-%m-%Y %H:%M'))
-        return data_final.strftime('%d-%m-%Y %H:%M')
+        return data_final_texto
 
     def setAtualizaData (self):
         vPrimerio = True
